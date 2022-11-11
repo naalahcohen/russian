@@ -1,0 +1,55 @@
+players: public(DynArray[address,100])
+#players - address array
+losers: public(DynArray[address,100])
+#losers - address array
+odds: public(uint256)
+#odds 
+playersTurn: public(uint256)
+#playersTurn uin256 (index of the next player to play)
+creator: public (address)
+#creator - address 
+
+@external
+def __init__():
+    self.creator = msg.sender
+#hash is wallet address , tool 
+@external
+def setOdds (oneInThisMany: uint256 ):
+    if self.creator == block.coinbase:
+        self.odds = oneInThisMany
+
+@external
+def addPlayer (Player: address):
+    assert Player not in(self.players)
+    assert Player not in(self.losers)
+    self.players.append(Player)
+
+@internal
+def lose (Player: address ):
+    for i in self.players:
+        self.players.pop()
+    self.losers.append(Player)
+
+@internal
+def random () -> (uint256):
+    num: uint256 = 2
+    num = block.number % self.odds 
+    return num
+
+@external
+def play():
+    ran: uint256 = 2
+    ran = self.random()
+
+    nextInLine: address = 0xa357FE92efC6ec5D906a00568efD1728Bf805E90
+    nextInLine = self.players[self.playersTurn+1]
+    if ran == 1:
+        self.lose(nextInLine)
+    else:
+        self.playersTurn += 1
+
+@external 
+def isALoser (person: address) -> bool:
+    return person in self.losers
+
+https://goerli.etherscan.io/tx/0x9440a7cc8ea247a8e7943f4cc9752f7f1de0d3a06c76e7fae700b5339d2ef9a6
